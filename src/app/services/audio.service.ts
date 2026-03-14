@@ -30,7 +30,7 @@ export interface StatusResponse {
   providedIn: 'root',
 })
 export class AudioService {
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = 'https://audioproject-production.up.railway.app/api';
 
   constructor(private http: HttpClient) {}
 
