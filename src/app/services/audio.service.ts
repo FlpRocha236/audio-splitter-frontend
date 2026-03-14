@@ -42,6 +42,13 @@ export class AudioService {
     return this.http.post<UploadResponse>(`${this.apiUrl}/upload/`, formData);
   }
 
+  uploadYoutube(youtubeUrl: string, title: string): Observable<UploadResponse> {
+  return this.http.post<UploadResponse>(`${this.apiUrl}/upload/youtube/`, {
+    youtube_url: youtubeUrl,
+    title: title || ''
+  });
+}
+
   // GET /api/status/{id}/ — verifica o status do processamento
   checkStatus(separationId: number): Observable<StatusResponse> {
     return this.http.get<StatusResponse>(`${this.apiUrl}/status/${separationId}/`);
@@ -67,3 +74,5 @@ export class AudioService {
     );
   }
 }
+
+

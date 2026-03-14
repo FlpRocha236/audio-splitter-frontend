@@ -10,65 +10,105 @@
 
   <div class="upload-card">
 
-    <!-- Drop Zone -->
-    @if (!selectedFile()) {
-      <div
-        class="drop-zone"
-        [class.dragging]="isDragging()"
-        (dragover)="onDragOver($event)"
-        (dragleave)="onDragLeave()"
-        (drop)="onDrop($event)"
-        (click)="fileInput.click()"
-      >
-        <input
-          #fileInput
-          type="file"
-          accept=".mp3,.wav,.flac,.ogg,.m4a"
-          (change)="onFileSelected($event)"
-          hidden
-        />
-        <div class="drop-icon">◈</div>
-        <p class="drop-title">Arraste seu arquivo aqui</p>
-        <p class="drop-sub">ou clique para selecionar</p>
-        <div class="drop-formats">
-          <span>MP3</span><span>WAV</span><span>FLAC</span><span>OGG</span>
+    <!-- Toggle de modo -->
+    <div class="mode-toggle">
+      <button
+        [class.active]="mode() === 'file'"
+        (click)="setMode('file')">
+        ♪ Arquivo
+      </button>
+      <button
+        [class.active]="mode() === 'youtube'"
+        (click)="setMode('youtube')">
+        ▶ YouTube
+      </button>
+    </div>
+
+    <!-- MODO ARQUIVO -->
+    @if (mode() === 'file') {
+      @if (!selectedFile()) {
+        <div
+          class="drop-zone"
+          [class.dragging]="isDragging()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave()"
+          (drop)="onDrop($event)"
+          (click)="fileInput.click()"
+        >
+          <input #fileInput type="file" accept=".mp3,.wav,.flac,.ogg,.m4a" (change)="onFileSelected($event)" hidden />
+          <div class="drop-icon">◈</div>
+          <p class="drop-title">Arraste seu arquivo aqui</p>
+          <p class="drop-sub">ou clique para selecionar</p>
+          <div class="drop-formats">
+            <span>MP3</span><span>WAV</span><span>FLAC</span><span>OGG</span>
+          </div>
         </div>
-      </div>
+      }
+
+      @if (selectedFile()) {
+        <div class="file-selected">
+          <div class="file-info">
+            <div class="file-icon">♪</div>
+            <div class="file-details">
+              <p class="file-name">{{ selectedFile()!.name }}</p>
+              <p class="file-size">{{ formatSize(selectedFile()!.size) }}</p>
+            </div>
+            <button class="file-remove" (click)="removeFile()">✕</button>
+          </div>
+          <div class="title-input-wrap">
+            <label>Título da música</label>
+            <input type="text" [value]="title()" (input)="title.set($any($event.target).value)" placeholder="Ex: Charlie Brown Jr - Me Encontra" />
+          </div>
+          <div class="upload-actions">
+            <button class="btn-outline" (click)="removeFile()">Trocar arquivo</button>
+            <button class="btn-primary" (click)="upload()" [disabled]="isLoading()">
+              @if (isLoading()) { Enviando... } @else { Processar com IA → }
+            </button>
+          </div>
+        </div>
+      }
     }
 
-    <!-- Arquivo selecionado -->
-    @if (selectedFile()) {
-      <div class="file-selected">
-        <div class="file-info">
-          <div class="file-icon">♪</div>
-          <div class="file-details">
-            <p class="file-name">{{ selectedFile()!.name }}</p>
-            <p class="file-size">{{ formatSize(selectedFile()!.size) }}</p>
-          </div>
-          <button class="file-remove" (click)="removeFile()">✕</button>
+    <!-- MODO YOUTUBE -->
+    @if (mode() === 'youtube') {
+      <div class="youtube-input">
+        <div class="youtube-icon">▶</div>
+        <p class="youtube-title">Cole o link do YouTube</p>
+        <p class="youtube-sub">O servidor baixa o áudio automaticamente e processa com IA.</p>
+
+        <div class="title-input-wrap">
+          <label>Link do YouTube</label>
+          <input
+            type="url"
+            [value]="youtubeUrl()"
+            (input)="youtubeUrl.set($any($event.target).value)"
+            placeholder="https://youtube.com/watch?v=..."
+          />
         </div>
 
         <div class="title-input-wrap">
-          <label>Título da música</label>
+          <label>Título (opcional)</label>
           <input
             type="text"
             [value]="title()"
             (input)="title.set($any($event.target).value)"
-            placeholder="Ex: Charlie Brown Jr - Me Encontra"
+            placeholder="Ex: Metallica - Nothing Else Matters"
           />
         </div>
 
         <div class="upload-actions">
-          <button class="btn-outline" (click)="removeFile()">Trocar arquivo</button>
           <button
             class="btn-primary"
             (click)="upload()"
-            [disabled]="isLoading()"
+            [disabled]="isLoading() || !youtubeUrl()"
           >
-            @if (isLoading()) { Enviando... }
-            @else { Processar com IA → }
+            @if (isLoading()) { Processando... } @else { Processar com IA → }
           </button>
         </div>
+
+        <p class="youtube-note">
+          ⚠ Use apenas músicas que você tenha direito de usar.
+        </p>
       </div>
     }
 
@@ -78,7 +118,6 @@
 
   </div>
 
-  <!-- Features -->
   <div class="features-grid">
     <div class="feature">
       <span class="feature-num">01</span>

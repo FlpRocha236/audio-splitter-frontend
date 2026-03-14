@@ -2,6 +2,8 @@ import { Component, EventEmitter, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AudioService } from '../../services/audio.service';
 
+type UploadMode = 'file' | 'youtube';
+
 @Component({
   selector: 'app-upload',
   imports: [FormsModule],
@@ -11,13 +13,23 @@ import { AudioService } from '../../services/audio.service';
 export class UploadComponent {
   @Output() uploaded = new EventEmitter<number>();
 
+  mode = signal<UploadMode>('file');
   title = signal('');
   selectedFile = signal<File | null>(null);
+  youtubeUrl = signal('');
   isDragging = signal(false);
   isLoading = signal(false);
   error = signal('');
 
   constructor(private audioService: AudioService) {}
+
+  setMode(m: UploadMode) {
+    this.mode.set(m);
+    this.error.set('');
+    this.selectedFile.set(null);
+    this.youtubeUrl.set('');
+    this.title.set('');
+  }
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
@@ -63,22 +75,35 @@ export class UploadComponent {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   }
 
-  upload() {
-    const file = this.selectedFile();
-    if (!file) return;
+  isValidYoutubeUrl(url: string): boolean {
+    return url.includes('youtube.com') || url.includes('youtu.be');
+  }
 
+  upload() {
     this.isLoading.set(true);
     this.error.set('');
 
-    this.audioService.uploadAudio(file, this.title()).subscribe({
-      next: (res) => {
+    if (this.mode() === 'file') {
+      const file = this.selectedFile();
+      if (!file) { this.isLoading.set(false); return; }
+
+      this.audioService.uploadAudio(file, this.title()).subscribe({
+        next: (res) => { this.isLoading.set(false); this.uploaded.emit(res.separation_id); },
+        error: () => { this.isLoading.set(false); this.error.set('Erro ao enviar o arquivo.'); }
+      });
+
+    } else {
+      const url = this.youtubeUrl();
+      if (!this.isValidYoutubeUrl(url)) {
         this.isLoading.set(false);
-        this.uploaded.emit(res.separation_id);
-      },
-      error: () => {
-        this.isLoading.set(false);
-        this.error.set('Erro ao enviar o arquivo. Verifique a conexão com o servidor.');
+        this.error.set('URL do YouTube inválida.');
+        return;
       }
-    });
+
+      this.audioService.uploadYoutube(url, this.title()).subscribe({
+        next: (res) => { this.isLoading.set(false); this.uploaded.emit(res.separation_id); },
+        error: () => { this.isLoading.set(false); this.error.set('Erro ao processar link do YouTube.'); }
+      });
+    }
   }
 }

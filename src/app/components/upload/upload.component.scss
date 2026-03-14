@@ -230,3 +230,61 @@
   .features-grid { grid-template-columns: 1fr; }
   .upload-actions { flex-direction: column; }
 }
+
+.mode-toggle {
+  display: flex;
+  gap: 1px;
+  background: var(--border);
+  margin-bottom: 2rem;
+
+  button {
+    flex: 1;
+    background: var(--bg3);
+    border: none;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+
+    &.active {
+      background: var(--bg);
+      color: var(--accent);
+    }
+
+    &:hover:not(.active) { color: var(--text); }
+  }
+}
+
+.youtube-input {
+  text-align: center;
+  padding: 2rem 0;
+
+  .youtube-icon {
+    font-size: 2rem;
+    color: #ff4444;
+    margin-bottom: 1rem;
+  }
+
+  .youtube-title {
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .youtube-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  .youtube-note {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 1.5rem;
+    letter-spacing: 0.05em;
+  }
+}
