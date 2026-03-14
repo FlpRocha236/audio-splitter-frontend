@@ -1,0 +1,48 @@
+<div class="progress-page">
+  <div class="progress-card">
+
+    <div class="progress-visual">
+      <div class="spinner-ring">
+        <div class="spinner-inner">◈</div>
+      </div>
+      <div class="waveform">
+        @for (bar of [1,2,3,4,5,6,7,8,9,10,11,12]; track bar) {
+          <div class="wave-bar" [style.animation-delay]="(bar * 0.08) + 's'"></div>
+        }
+      </div>
+    </div>
+
+    <div class="progress-info">
+      <p class="progress-tag">// Processando</p>
+      <h2 class="progress-title">
+        {{ getStageLabel() }}<span class="dots">{{ dots() }}</span>
+      </h2>
+      <p class="progress-sub">
+        O modelo Demucs htdemucs_6s está analisando o áudio.<br>
+        Isso pode levar alguns minutos dependendo do arquivo.
+      </p>
+    </div>
+
+    <div class="progress-stages">
+      <div class="stage" [class.active]="status() === 'PENDING'" [class.done]="status() !== 'PENDING'">
+        <div class="stage-dot"></div>
+        <span>Na fila</span>
+      </div>
+      <div class="stage-line"></div>
+      <div class="stage" [class.active]="status() === 'PROCESSING'" [class.done]="status() === 'COMPLETED'">
+        <div class="stage-dot"></div>
+        <span>Processando</span>
+      </div>
+      <div class="stage-line"></div>
+      <div class="stage" [class.active]="status() === 'COMPLETED'">
+        <div class="stage-dot"></div>
+        <span>Concluído</span>
+      </div>
+    </div>
+
+    <p class="progress-note">
+      A IA verifica o status automaticamente a cada 5 segundos.
+    </p>
+
+  </div>
+</div>

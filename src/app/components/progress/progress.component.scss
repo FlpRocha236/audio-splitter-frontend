@@ -1,0 +1,165 @@
+.progress-page {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.progress-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 3rem;
+  text-align: center;
+}
+
+.progress-visual {
+  position: relative;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.spinner-ring {
+  width: 80px;
+  height: 80px;
+  border: 1px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .spinner-inner {
+    font-size: 1.5rem;
+    color: var(--accent);
+    animation: spin-reverse 2s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  to { transform: rotate(-360deg); }
+}
+
+.waveform {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  opacity: 0.3;
+
+  .wave-bar {
+    width: 3px;
+    background: var(--accent2);
+    border-radius: 2px;
+    animation: wave 1.2s ease-in-out infinite alternate;
+
+    @for $i from 1 through 12 {
+      &:nth-child(#{$i}) {
+        height: #{4 + random(20)}px;
+      }
+    }
+  }
+}
+
+@keyframes wave {
+  from { transform: scaleY(0.3); }
+  to { transform: scaleY(1); }
+}
+
+.progress-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent2);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.progress-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  color: var(--text);
+  margin-bottom: 1rem;
+  line-height: 1;
+
+  .dots {
+    color: var(--accent);
+    display: inline-block;
+    min-width: 1.5rem;
+    text-align: left;
+  }
+}
+
+.progress-sub {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+}
+
+.progress-stages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2rem;
+
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+
+    .stage-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      transition: all 0.3s;
+    }
+
+    span {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    &.active .stage-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 8px rgba(232, 199, 106, 0.4);
+    }
+
+    &.done .stage-dot {
+      background: var(--accent2);
+      border-color: var(--accent2);
+    }
+
+    &.active span { color: var(--accent); }
+    &.done span { color: var(--accent2); }
+  }
+
+  .stage-line {
+    width: 60px;
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 1.5rem;
+  }
+}
+
+.progress-note {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}

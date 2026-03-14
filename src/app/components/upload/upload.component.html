@@ -1,0 +1,99 @@
+<div class="upload-page">
+  <div class="upload-hero">
+    <p class="section-tag">// AI Audio Separation</p>
+    <h1 class="hero-title">Split your<br><span>music.</span></h1>
+    <p class="hero-sub">
+      Separe qualquer música em 6 faixas isoladas usando IA da Meta.
+      Voz, bateria, baixo, guitarra, piano e outros.
+    </p>
+  </div>
+
+  <div class="upload-card">
+
+    <!-- Drop Zone -->
+    @if (!selectedFile()) {
+      <div
+        class="drop-zone"
+        [class.dragging]="isDragging()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+        (click)="fileInput.click()"
+      >
+        <input
+          #fileInput
+          type="file"
+          accept=".mp3,.wav,.flac,.ogg,.m4a"
+          (change)="onFileSelected($event)"
+          hidden
+        />
+        <div class="drop-icon">◈</div>
+        <p class="drop-title">Arraste seu arquivo aqui</p>
+        <p class="drop-sub">ou clique para selecionar</p>
+        <div class="drop-formats">
+          <span>MP3</span><span>WAV</span><span>FLAC</span><span>OGG</span>
+        </div>
+      </div>
+    }
+
+    <!-- Arquivo selecionado -->
+    @if (selectedFile()) {
+      <div class="file-selected">
+        <div class="file-info">
+          <div class="file-icon">♪</div>
+          <div class="file-details">
+            <p class="file-name">{{ selectedFile()!.name }}</p>
+            <p class="file-size">{{ formatSize(selectedFile()!.size) }}</p>
+          </div>
+          <button class="file-remove" (click)="removeFile()">✕</button>
+        </div>
+
+        <div class="title-input-wrap">
+          <label>Título da música</label>
+          <input
+            type="text"
+            [value]="title()"
+            (input)="title.set($any($event.target).value)"
+            placeholder="Ex: Charlie Brown Jr - Me Encontra"
+          />
+        </div>
+
+        <div class="upload-actions">
+          <button class="btn-outline" (click)="removeFile()">Trocar arquivo</button>
+          <button
+            class="btn-primary"
+            (click)="upload()"
+            [disabled]="isLoading()"
+          >
+            @if (isLoading()) { Enviando... }
+            @else { Processar com IA → }
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (error()) {
+      <p class="upload-error">{{ error() }}</p>
+    }
+
+  </div>
+
+  <!-- Features -->
+  <div class="features-grid">
+    <div class="feature">
+      <span class="feature-num">01</span>
+      <h3>6 Stems</h3>
+      <p>Voz, Bateria, Baixo, Guitarra, Piano e Outros isolados com precisão.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-num">02</span>
+      <h3>Demucs AI</h3>
+      <p>Modelo htdemucs_6s da Meta — estado da arte em separação de fontes.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-num">03</span>
+      <h3>Mixer</h3>
+      <p>Selecione quais faixas manter e baixe o mix personalizado em MP3.</p>
+    </div>
+  </div>
+</div>

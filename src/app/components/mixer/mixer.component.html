@@ -1,0 +1,54 @@
+<div class="mixer-overlay" (click)="close.emit()">
+  <div class="mixer-panel" (click)="$event.stopPropagation()">
+
+    <div class="mixer-header">
+      <div>
+        <p class="section-tag">// Backing Track Mixer</p>
+        <h2 class="mixer-title">Seu mix<br>personalizado.</h2>
+      </div>
+      <button class="mixer-close" (click)="close.emit()">✕</button>
+    </div>
+
+    <p class="mixer-sub">Selecione as faixas que deseja incluir no mix final.</p>
+
+    <div class="mixer-tracks">
+      @for (stem of stems; track stem.key) {
+        <div
+          class="mixer-track"
+          [class.selected]="isSelected(stem.key)"
+          [style.--stem-color]="stem.color"
+          (click)="toggleTrack(stem.key)"
+        >
+          <div class="track-icon" [style.color]="stem.color">{{ stem.icon }}</div>
+          <span class="track-label">{{ stem.label }}</span>
+          <div class="track-check">
+            @if (isSelected(stem.key)) { ✓ }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="mixer-footer">
+      <p class="mixer-count">
+        {{ selectedTracks().size }} de {{ stems.length }} faixas selecionadas
+      </p>
+
+      @if (error()) {
+        <p class="mixer-error">{{ error() }}</p>
+      }
+
+      <div class="mixer-actions">
+        <button class="btn-outline" (click)="close.emit()">Cancelar</button>
+        <button
+          class="btn-primary"
+          (click)="download()"
+          [disabled]="isDownloading() || selectedTracks().size === 0"
+        >
+          @if (isDownloading()) { Gerando mix... }
+          @else { ↓ Baixar mix }
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
