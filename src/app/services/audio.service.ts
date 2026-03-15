@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, interval, switchMap, takeWhile, tap } from 'rxjs';
+import { Observable, interval, switchMap, takeWhile } from 'rxjs';
 
 export interface UploadResponse {
   success: boolean;
@@ -30,42 +30,46 @@ export interface StatusResponse {
   providedIn: 'root',
 })
 export class AudioService {
+  // Ajuste: Removida a barra daqui para evitar duplicidade, 
+  // mas garantindo que o caminho final SEMPRE tenha a barra.
   private apiUrl = 'https://audioproject-production.up.railway.app/api';
 
   constructor(private http: HttpClient) {}
 
-  // POST /api/upload/ — envia o arquivo de áudio
+  // POST /api/upload/
   uploadAudio(file: File, title: string): Observable<UploadResponse> {
     const formData = new FormData();
     formData.append('original_audio', file);
     formData.append('title', title || file.name.replace(/\.[^/.]+$/, ''));
+    // Garanta a barra no final: /upload/
     return this.http.post<UploadResponse>(`${this.apiUrl}/upload/`, formData);
   }
 
+  // POST /api/upload/youtube/
   uploadYoutube(youtubeUrl: string, title: string): Observable<UploadResponse> {
-  return this.http.post<UploadResponse>(`${this.apiUrl}/upload/youtube/`, {
-    youtube_url: youtubeUrl,
-    title: title || ''
-  });
-}
+    return this.http.post<UploadResponse>(`${this.apiUrl}/upload/youtube/`, {
+      youtube_url: youtubeUrl,
+      title: title || ''
+    });
+  }
 
-  // GET /api/status/{id}/ — verifica o status do processamento
+  // GET /api/status/{id}/
   checkStatus(separationId: number): Observable<StatusResponse> {
     return this.http.get<StatusResponse>(`${this.apiUrl}/status/${separationId}/`);
   }
 
-  // Polling automático a cada 5 segundos até COMPLETED ou FAILED
+  // Polling automático
   pollStatus(separationId: number): Observable<StatusResponse> {
     return interval(5000).pipe(
       switchMap(() => this.checkStatus(separationId)),
       takeWhile(
         (res) => res.status !== 'COMPLETED' && res.status !== 'FAILED',
-        true // emite o último valor (COMPLETED ou FAILED) antes de parar
+        true
       )
     );
   }
 
-  // POST /api/mix/{id}/ — baixa o mix com as faixas selecionadas
+  // POST /api/mix/{id}/
   downloadMix(separationId: number, tracks: string[]): Observable<Blob> {
     return this.http.post(
       `${this.apiUrl}/mix/${separationId}/`,
@@ -74,5 +78,3 @@ export class AudioService {
     );
   }
 }
-
-
