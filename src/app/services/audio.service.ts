@@ -32,7 +32,7 @@ export interface StatusResponse {
 export class AudioService {
   // Ajuste: Removida a barra daqui para evitar duplicidade, 
   // mas garantindo que o caminho final SEMPRE tenha a barra.
-  private apiUrl = 'https://interminable-louisa-disjointedly.ngrok-free.dev';
+private apiUrl = 'https://interminable-louisa-disjointedly.ngrok-free.dev/api';
 
   constructor(private http: HttpClient) {}
 
