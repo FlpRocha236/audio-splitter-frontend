@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, interval, switchMap, takeWhile } from 'rxjs';
 
 export interface UploadResponse {
@@ -30,35 +30,42 @@ export interface StatusResponse {
   providedIn: 'root',
 })
 export class AudioService {
-  // Ajuste: Removida a barra daqui para evitar duplicidade, 
-  // mas garantindo que o caminho final SEMPRE tenha a barra.
-private apiUrl = 'https://interminable-louisa-disjointedly.ngrok-free.dev/api';
+  private apiUrl = 'https://interminable-louisa-disjointedly.ngrok-free.dev/api';
+
+  // 🔑 A CARTEIRADA DO NGROK (Pula a tela de bloqueio)
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'ngrok-skip-browser-warning': 'true' // Isso diz pro Ngrok não enviar a tela de HTML
+    });
+  }
 
   constructor(private http: HttpClient) {}
 
-  // POST /api/upload/
   uploadAudio(file: File, title: string): Observable<UploadResponse> {
     const formData = new FormData();
     formData.append('original_audio', file);
     formData.append('title', title || file.name.replace(/\.[^/.]+$/, ''));
-    // Garanta a barra no final: /upload/
-    return this.http.post<UploadResponse>(`${this.apiUrl}/upload/`, formData);
+    
+    return this.http.post<UploadResponse>(`${this.apiUrl}/upload/`, formData, {
+      headers: this.getHeaders()
+    });
   }
 
-  // POST /api/upload/youtube/
   uploadYoutube(youtubeUrl: string, title: string): Observable<UploadResponse> {
     return this.http.post<UploadResponse>(`${this.apiUrl}/upload/youtube/`, {
       youtube_url: youtubeUrl,
       title: title || ''
+    }, {
+      headers: this.getHeaders()
     });
   }
 
-  // GET /api/status/{id}/
   checkStatus(separationId: number): Observable<StatusResponse> {
-    return this.http.get<StatusResponse>(`${this.apiUrl}/status/${separationId}/`);
+    return this.http.get<StatusResponse>(`${this.apiUrl}/status/${separationId}/`, {
+      headers: this.getHeaders()
+    });
   }
 
-  // Polling automático
   pollStatus(separationId: number): Observable<StatusResponse> {
     return interval(5000).pipe(
       switchMap(() => this.checkStatus(separationId)),
@@ -69,12 +76,14 @@ private apiUrl = 'https://interminable-louisa-disjointedly.ngrok-free.dev/api';
     );
   }
 
-  // POST /api/mix/{id}/
   downloadMix(separationId: number, tracks: string[]): Observable<Blob> {
     return this.http.post(
       `${this.apiUrl}/mix/${separationId}/`,
       { tracks },
-      { responseType: 'blob' }
+      { 
+        responseType: 'blob',
+        headers: this.getHeaders()
+      }
     );
   }
 }
