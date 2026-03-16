@@ -32,7 +32,7 @@ export interface StatusResponse {
 export class AudioService {
   // Ajuste: Removida a barra daqui para evitar duplicidade, 
   // mas garantindo que o caminho final SEMPRE tenha a barra.
-  private apiUrl = 'https://loud-feet-beg.loca.lt';
+  private apiUrl = 'https://0504428ce0edb9.lhr.life';
 
   constructor(private http: HttpClient) {}
 
